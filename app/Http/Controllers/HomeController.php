@@ -30,4 +30,11 @@ class HomeController extends Controller
         $data = User::find($id);
         return view('home', compact('data'));
     }
+    public function dashboard()
+    {
+        $id = Auth::id();
+        $data = User::find($id);
+        $tasks = $data->tasks;
+        return view('index', compact('data','tasks'));
+    }
 }
