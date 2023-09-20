@@ -13,91 +13,58 @@
 <body>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">{{ __('Dashboard') }}</div>
+            <div class="card-body">
+                <div class="card-header mt-5">{{ __('Dashboard') }}</div>
 
-                    <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="text-center fw-bold">Add Task</h5>
+                        <form id="addTask">
+                            <div class="">
+                                <input id="task" class="form-control" type="text" placeholder="Enter Task">
+                                <label class="form-label ms-2">Task</label>
                             </div>
-                        @endif
-                        <div class="row">
-
-                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Add Task</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form id="#addTask">
-                                                <div class="">
-                                                    <input id="#task" class="form-control" type="text" placeholder="Enter Task">
-                                                    <label class="form-label ms-2">Task</label>
-                                                </div>
-                                                <input type="text" id="#user_id" value="{{$data->id}}" hidden>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                    <button  type="submit" class="btn btn-primary">Add</button>
-                                                </div>
-                                            </form>
-
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="table table-responsive">
-
-                                    <h5 class="text-center fw-bold">Task List</h5>
-                                    <div class="d-flex justify-content-end">
-                                        <button type="button" class="btn btn-primary float-left" data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal">
-                                            Add Task
-                                        </button>
-                                    </div>
-
-
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>Task</th>
-                                            <th>Status</th>
-                                            <th>Change Status</th>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($tasks as $task)
-                                                <tr>
-                                                    <td>{{ $task->task }}</td>
-                                                    <td>{{ $task->status }}</td>
-                                                    @if ($task->status === 'done')
-                                                        <td><a href="" type="submit" class="btn btn-warning change-status"
-                                                                id="mark-pending" data-new-status="pending"
-                                                                data-task-id="{{ $task->id }}">Mark as
-                                                                Pending</a></td>
-                                                    @else
-                                                        <td><a href="" class="btn btn-success change-status"
-                                                                id="mark-done" data-new-status="done" data-task-id="{{ $task->id }}">Mark
-                                                                as Done</a></td>
-                                                    @endif
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            <input type="text" id="user_id" value="{{ $data->id }}" hidden>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </form>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="table table-responsive">
+                            <h5 class="text-center fw-bold">Task List</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                    <th>Task</th>
+                                    <th>Status</th>
+                                    <th>Change Status</th>
+                                </thead>
+                                <tbody>
+                                    @foreach ($tasks as $task)
+                                        <tr>
+                                            <td>{{ $task->task }}</td>
+                                            <td>{{ $task->status }}</td>
+                                            @if ($task->status === 'done')
+                                                <td><a href="" type="submit"
+                                                        class="btn btn-warning change-status" id="mark-pending"
+                                                        data-new-status="pending"
+                                                        data-task-id="{{ $task->id }}">Mark as
+                                                        Pending</a></td>
+                                            @else
+                                                <td><a href="" class="btn btn-success change-status"
+                                                        id="mark-done" data-new-status="done"
+                                                        data-task-id="{{ $task->id }}">Mark
+                                                        as Done</a></td>
+                                            @endif
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -108,11 +75,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('#addTask').on('submit', function(e) {
-           
+        $('#addTask').on('submit', function() {
             var task = $('#task').val();
-            var apiKey = 'helloatg';
             var user_id = $('#user_id').val();
+            var apiKey = 'helloatg';
 
             $.ajax({
                 type: 'POST',
@@ -126,8 +92,19 @@
                     'API_KEY': apiKey,
                 },
                 success: function(response) {
+
                     if (response.status === 1) {
-                        alert(response)
+                        var newRow = $('<tr>');
+                            newRow.append('<td>' + task + '</td>');
+                            newRow.append('<td>' + status + '</td>');
+                            newRow.append(
+                                '<td><button class="change-status btn btn-success" data-task-id="' +
+                                response.task.id +
+                                '" data-new-status="done">Mark Done</button></td>');
+                            $('table tbody').append(newRow);
+
+                            // Clear the input fields after adding the task
+                            $('#task').val('');
                     } else {
                         console.log('Task not added. API response:', response);
                     }
@@ -179,4 +156,6 @@
             });
         });
     });
-</script></html>
+</script>
+
+</html>
