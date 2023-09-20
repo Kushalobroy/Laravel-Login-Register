@@ -40,10 +40,11 @@
                                                     <input id="#task" class="form-control" type="text" placeholder="Enter Task">
                                                     <label class="form-label ms-2">Task</label>
                                                 </div>
+                                                <input type="text" id="#user_id" value="{{$data->id}}" hidden>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Add</button>
+                                                    <button  type="submit" class="btn btn-primary">Add</button>
                                                 </div>
                                             </form>
 
@@ -108,10 +109,10 @@
 <script>
     $(document).ready(function() {
         $('#addTask').on('submit', function(e) {
-            e.preventDefault();
+           
             var task = $('#task').val();
             var apiKey = 'helloatg';
-            var user_id = {{ Auth::user()->id }};
+            var user_id = $('#user_id').val();
 
             $.ajax({
                 type: 'POST',
@@ -126,7 +127,7 @@
                 },
                 success: function(response) {
                     if (response.status === 1) {
-                        
+                        alert(response)
                     } else {
                         console.log('Task not added. API response:', response);
                     }
